@@ -1,13 +1,30 @@
-# How to Contribute
+# Contributing
 
-We're always looking for people to help make Readarr even better, there are a number of ways to contribute.
+Thanks for helping. Bug reports, questions and feature ideas go to
+[GitHub Issues](https://github.com/ricetim/readarr-rresurrected/issues).
 
-This file has been moved to the wiki for the latest details please see the [contributing wiki page](https://wiki.servarr.com/readarr/contributing).
+## Pull requests
 
-## Documentation
+1. Open an issue first for anything larger than a small fix, so we can agree on the approach.
+2. Branch from `develop` and keep each pull request to one change.
+3. Run the tests for what you touched, and add tests for new behaviour:
 
-Setup guides, [FAQ](https://wiki.servarr.com/readarr/faq), the more information we have on the [wiki](https://wiki.servarr.com/readarr) the better.
+   ```bash
+   # Backend (build from the solution, then test without rebuilding)
+   dotnet build src/Readarr.sln -p:Configuration=Debug -p:Platform=Posix --no-restore
+   dotnet test src/NzbDrone.Core.Test/Readarr.Core.Test.csproj -p:Platform=Posix --no-build
 
-## Development
+   # Metadata service
+   cd bookinfo && pytest
 
-See the [Wiki Page](https://wiki.servarr.com/readarr/contributing)
+   # Frontend
+   yarn lint
+   ```
+
+4. If you change behaviour users see, add an entry under `## [Unreleased]` in `CHANGELOG.md`,
+   written for users rather than as a commit message, and update the documentation in `docs/`.
+5. If you rename a documentation heading, a health check or an integration, run
+   `python3 .github/scripts/check_docs_anchors.py`: the web interface links to those headings.
+
+The project is licensed under the [GNU GPL v3](LICENSE.md), and contributions are accepted under
+the same license.
