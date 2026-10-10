@@ -1,6 +1,7 @@
 using FluentValidation;
 using NzbDrone.Common.Extensions;
 using NzbDrone.Core.Annotations;
+using NzbDrone.Core.Docs;
 using NzbDrone.Core.ThingiProvider;
 using NzbDrone.Core.Validation;
 
@@ -38,10 +39,10 @@ namespace NzbDrone.Core.Notifications.Twitter
             AuthorizeNotification = "startOAuth";
         }
 
-        [FieldDefinition(0, Label = "Consumer Key", Privacy = PrivacyLevel.ApiKey, HelpText = "Consumer key from a Twitter application", HelpLink = "https://wiki.servarr.com/useful-tools#twitter-connect")]
+        [FieldDefinition(0, Label = "Consumer Key", Privacy = PrivacyLevel.ApiKey, HelpText = "Consumer key from a Twitter application", HelpLink = DocsUrls.Supported + "#twitter")]
         public string ConsumerKey { get; set; }
 
-        [FieldDefinition(1, Label = "Consumer Secret", Privacy = PrivacyLevel.ApiKey, HelpText = "Consumer secret from a Twitter application", HelpLink = "https://wiki.servarr.com/useful-tools#twitter-connect")]
+        [FieldDefinition(1, Label = "Consumer Secret", Privacy = PrivacyLevel.ApiKey, HelpText = "Consumer secret from a Twitter application", HelpLink = DocsUrls.Supported + "#twitter")]
         public string ConsumerSecret { get; set; }
 
         [FieldDefinition(2, Label = "Access Token", Privacy = PrivacyLevel.ApiKey, Advanced = true)]

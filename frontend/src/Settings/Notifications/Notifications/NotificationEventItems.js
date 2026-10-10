@@ -5,6 +5,7 @@ import FormInputGroup from 'Components/Form/FormInputGroup';
 import FormInputHelpText from 'Components/Form/FormInputHelpText';
 import FormLabel from 'Components/Form/FormLabel';
 import { inputTypes } from 'Helpers/Props';
+import getDocsUrl from 'Utilities/getDocsUrl';
 import translate from 'Utilities/String/translate';
 import styles from './NotificationEventItems.css';
 
@@ -53,7 +54,7 @@ function NotificationEventItems(props) {
       <div>
         <FormInputHelpText
           text="Select which events should trigger this notification"
-          link="https://wiki.servarr.com/readarr/settings#connections"
+          link={getDocsUrl('settings', 'connections')}
         />
         <div className={styles.events}>
           <div>

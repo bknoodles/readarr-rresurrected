@@ -9,6 +9,7 @@ using NzbDrone.Common.Extensions;
 using NzbDrone.Common.Processes;
 using NzbDrone.Common.Serializer;
 using NzbDrone.Core.Books;
+using NzbDrone.Core.Docs;
 using NzbDrone.Core.HealthCheck;
 using NzbDrone.Core.MediaFiles;
 using NzbDrone.Core.ThingiProvider;
@@ -31,7 +32,7 @@ namespace NzbDrone.Core.Notifications.CustomScript
 
         public override string Name => "Custom Script";
 
-        public override string Link => "https://wiki.servarr.com/readarr/settings#connections";
+        public override string Link => DocsUrls.Settings + "#connections";
 
         public override ProviderMessage Message => new ProviderMessage("Testing will execute the script with the EventType set to Test, ensure your script handles this correctly", ProviderMessageType.Warning);
 

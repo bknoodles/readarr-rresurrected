@@ -11,6 +11,7 @@ using NzbDrone.Common.EnvironmentInfo;
 using NzbDrone.Common.Exceptions;
 using NzbDrone.Common.Instrumentation;
 using NzbDrone.Core.Datastore.Migration.Framework;
+using NzbDrone.Core.Docs;
 
 namespace NzbDrone.Core.Datastore
 {
@@ -158,10 +159,10 @@ namespace NzbDrone.Core.Datastore
 
                 if (OsInfo.IsOsx)
                 {
-                    throw new CorruptDatabaseException("Database file: {0} is corrupt, restore from backup if available. See: https://wiki.servarr.com/readarr/faq#i-use-readarr-on-a-mac-and-it-suddenly-stopped-working-what-happened", e, fileName);
+                    throw new CorruptDatabaseException("Database file: {0} is corrupt, restore from backup if available. See: " + DocsUrls.Troubleshooting + "#database-disk-image-is-malformed", e, fileName);
                 }
 
-                throw new CorruptDatabaseException("Database file: {0} is corrupt, restore from backup if available. See: https://wiki.servarr.com/readarr/faq#i-am-getting-an-error-database-disk-image-is-malformed", e, fileName);
+                throw new CorruptDatabaseException("Database file: {0} is corrupt, restore from backup if available. See: " + DocsUrls.Troubleshooting + "#database-disk-image-is-malformed", e, fileName);
             }
             catch (NpgsqlException e)
             {

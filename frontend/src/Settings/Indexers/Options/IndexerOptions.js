@@ -8,6 +8,7 @@ import FormInputGroup from 'Components/Form/FormInputGroup';
 import FormLabel from 'Components/Form/FormLabel';
 import LoadingIndicator from 'Components/Loading/LoadingIndicator';
 import { inputTypes, kinds } from 'Helpers/Props';
+import getDocsUrl from 'Utilities/getDocsUrl';
 import translate from 'Utilities/String/translate';
 
 function IndexerOptions(props) {
@@ -100,7 +101,7 @@ function IndexerOptions(props) {
                 unit="minutes"
                 helpText={translate('RssSyncIntervalHelpText')}
                 helpTextWarning={translate('ThisWillApplyToAllIndexersPleaseFollowTheRulesSetForthByThem')}
-                helpLink="https://wiki.servarr.com/readarr/faq#how-does-readarr-work"
+                helpLink={getDocsUrl('settings', 'how-readarr-finds-releases')}
                 onChange={onInputChange}
                 {...settings.rssSyncInterval}
               />

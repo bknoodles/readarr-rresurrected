@@ -1,4 +1,5 @@
 import { createSelector } from 'reselect';
+import getDocsUrl from 'Utilities/getDocsUrl';
 
 function createHealthCheckSelector() {
   return createSelector(
@@ -12,7 +13,7 @@ function createHealthCheckSelector() {
           source: 'UI',
           type: 'warning',
           message: 'Could not connect to SignalR, UI won\'t update',
-          wikiUrl: 'https://wiki.servarr.com/readarr/system#could-not-connect-to-signalr'
+          wikiUrl: getDocsUrl('health-checks', 'could-not-connect-to-signalr')
         });
       }
 

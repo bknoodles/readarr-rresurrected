@@ -104,7 +104,7 @@ namespace NzbDrone.Host
                     License = new OpenApiLicense
                     {
                         Name = "GPL-3.0",
-                        Url = new Uri("https://github.com/Readarr/Readarr/blob/develop/LICENSE.md")
+                        Url = new Uri("https://github.com/ricetim/readarr-rresurrected/blob/develop/LICENSE.md")
                     }
                 });
 

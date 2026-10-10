@@ -9,6 +9,7 @@ import LoadingIndicator from 'Components/Loading/LoadingIndicator';
 import PageContent from 'Components/Page/PageContent';
 import PageContentBody from 'Components/Page/PageContentBody';
 import { icons, kinds } from 'Helpers/Props';
+import getDocsUrl from 'Utilities/getDocsUrl';
 import getErrorMessage from 'Utilities/Object/getErrorMessage';
 import translate from 'Utilities/String/translate';
 import AddNewAuthorSearchResultConnector from './Author/AddNewAuthorSearchResultConnector';
@@ -143,7 +144,7 @@ class AddNewItem extends Component {
                 <Alert kind={kinds.WARNING}>{getErrorMessage(error)}</Alert>
 
                 <div>
-                  <Link to="https://wiki.servarr.com/readarr/troubleshooting#invalid-response-received-from-metadata-api">
+                  <Link to={getDocsUrl('troubleshooting', 'invalid-response-from-the-metadata-service')}>
                     {translate('WhySearchesCouldBeFailing')}
                   </Link>
                 </div>

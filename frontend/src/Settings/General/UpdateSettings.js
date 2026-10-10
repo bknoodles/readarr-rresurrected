@@ -5,6 +5,7 @@ import FormGroup from 'Components/Form/FormGroup';
 import FormInputGroup from 'Components/Form/FormInputGroup';
 import FormLabel from 'Components/Form/FormLabel';
 import { inputTypes, sizes } from 'Helpers/Props';
+import getDocsUrl from 'Utilities/getDocsUrl';
 import titleCase from 'Utilities/String/titleCase';
 import translate from 'Utilities/String/translate';
 
@@ -60,7 +61,7 @@ function UpdateSettings(props) {
           type={inputTypes.AUTO_COMPLETE}
           name="branch"
           helpText={usingExternalUpdateMechanism ? translate('BranchUpdateMechanism') : translate('BranchUpdate')}
-          helpLink="https://wiki.servarr.com/readarr/settings#updates"
+          helpLink={getDocsUrl('settings', 'updates')}
           {...branch}
           values={branchValues}
           onChange={onInputChange}
@@ -97,7 +98,7 @@ function UpdateSettings(props) {
             name="updateMechanism"
             values={updateOptions}
             helpText={translate('UpdateMechanismHelpText')}
-            helpLink="https://wiki.servarr.com/readarr/settings#updates"
+            helpLink={getDocsUrl('settings', 'updates')}
             onChange={onInputChange}
             {...updateMechanism}
           />

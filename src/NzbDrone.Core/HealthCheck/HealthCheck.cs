@@ -2,6 +2,7 @@ using System;
 using System.Text.RegularExpressions;
 using NzbDrone.Common.Http;
 using NzbDrone.Core.Datastore;
+using NzbDrone.Core.Docs;
 
 namespace NzbDrone.Core.HealthCheck
 {
@@ -39,7 +40,7 @@ namespace NzbDrone.Core.HealthCheck
 
         private static HttpUri MakeWikiUrl(string fragment)
         {
-            return new HttpUri("https://wiki.servarr.com/readarr/system#") + new HttpUri(fragment);
+            return new HttpUri(DocsUrls.HealthChecks + "#") + new HttpUri(fragment);
         }
     }
 

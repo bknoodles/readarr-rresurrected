@@ -7,6 +7,7 @@ import Link from 'Components/Link/Link';
 import InlineMarkdown from 'Components/Markdown/InlineMarkdown';
 import PageSectionContent from 'Components/Page/PageSectionContent';
 import { icons, kinds } from 'Helpers/Props';
+import getDocsUrl from 'Utilities/getDocsUrl';
 import translate from 'Utilities/String/translate';
 import EditRemotePathMappingModalConnector from './EditRemotePathMappingModalConnector';
 import RemotePathMapping from './RemotePathMapping';
@@ -54,7 +55,7 @@ class RemotePathMappings extends Component {
         >
 
           <Alert kind={kinds.INFO}>
-            <InlineMarkdown data={translate('RemotePathMappingsInfo', { app: 'Readarr', wikiLink: 'https://wiki.servarr.com/readarr/settings#remote-path-mappings' })} />
+            <InlineMarkdown data={translate('RemotePathMappingsInfo', { app: 'Readarr', wikiLink: getDocsUrl('settings', 'remote-path-mappings') })} />
           </Alert>
 
           <div className={styles.remotePathMappingsHeader}>

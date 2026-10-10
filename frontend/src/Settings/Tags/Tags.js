@@ -5,6 +5,7 @@ import FieldSet from 'Components/FieldSet';
 import Link from 'Components/Link/Link';
 import PageSectionContent from 'Components/Page/PageSectionContent';
 import { kinds } from 'Helpers/Props';
+import getDocsUrl from 'Utilities/getDocsUrl';
 import translate from 'Utilities/String/translate';
 import TagConnector from './TagConnector';
 import styles from './Tags.css';
@@ -16,7 +17,7 @@ function Tags(props) {
   } = props;
 
   if (!items.length) {
-    const wikiLink = <Link to='https://wiki.servarr.com/readarr/settings#tags'>here</Link>;
+    const wikiLink = <Link to={getDocsUrl('settings', 'tags')}>here</Link>;
     return (
       <Alert kind={kinds.INFO}>
         {translate('NoTagsHaveBeenAddedYet', [wikiLink])}

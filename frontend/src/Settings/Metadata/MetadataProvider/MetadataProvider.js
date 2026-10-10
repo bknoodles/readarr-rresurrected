@@ -8,6 +8,7 @@ import FormInputGroup from 'Components/Form/FormInputGroup';
 import FormLabel from 'Components/Form/FormLabel';
 import LoadingIndicator from 'Components/Loading/LoadingIndicator';
 import { inputTypes, kinds } from 'Helpers/Props';
+import getDocsUrl from 'Utilities/getDocsUrl';
 import translate from 'Utilities/String/translate';
 
 const writeAudioTagOptions = [
@@ -95,7 +96,7 @@ function MetadataProvider(props) {
                   type={inputTypes.SELECT}
                   name="writeBookTags"
                   helpTextWarning={translate('WriteBookTagsHelpTextWarning')}
-                  helpLink="https://wiki.servarr.com/readarr/settings#write-metadata-to-book-files"
+                  helpLink={getDocsUrl('settings', 'write-metadata-to-book-files')}
                   values={writeBookTagOptions}
                   onChange={onInputChange}
                   {...settings.writeBookTags}
@@ -140,7 +141,7 @@ function MetadataProvider(props) {
                   type={inputTypes.SELECT}
                   name="writeAudioTags"
                   helpTextWarning={translate('WriteBookTagsHelpTextWarning')}
-                  helpLink="https://wiki.servarr.com/readarr/settings#write-metadata-to-audio-files"
+                  helpLink={getDocsUrl('settings', 'write-metadata-to-audio-files')}
                   values={writeAudioTagOptions}
                   onChange={onInputChange}
                   {...settings.writeAudioTags}

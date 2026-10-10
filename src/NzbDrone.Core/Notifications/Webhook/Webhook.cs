@@ -3,6 +3,7 @@ using FluentValidation.Results;
 using NzbDrone.Common.Extensions;
 using NzbDrone.Core.Books;
 using NzbDrone.Core.Configuration;
+using NzbDrone.Core.Docs;
 using NzbDrone.Core.MediaFiles;
 using NzbDrone.Core.Validation;
 
@@ -18,7 +19,7 @@ namespace NzbDrone.Core.Notifications.Webhook
             _proxy = proxy;
         }
 
-        public override string Link => "https://wiki.servarr.com/readarr/settings#connections";
+        public override string Link => DocsUrls.Settings + "#connections";
 
         public override void OnGrab(GrabMessage message)
         {

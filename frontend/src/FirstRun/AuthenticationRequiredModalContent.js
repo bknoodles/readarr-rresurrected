@@ -12,6 +12,7 @@ import ModalFooter from 'Components/Modal/ModalFooter';
 import ModalHeader from 'Components/Modal/ModalHeader';
 import { inputTypes, kinds } from 'Helpers/Props';
 import { authenticationMethodOptions, authenticationRequiredOptions } from 'Settings/General/SecuritySettings';
+import getDocsUrl from 'Utilities/getDocsUrl';
 import translate from 'Utilities/String/translate';
 import styles from './AuthenticationRequiredModalContent.css';
 
@@ -79,7 +80,7 @@ function AuthenticationRequiredModalContent(props) {
                   values={authenticationMethodOptions}
                   helpText={translate('AuthenticationMethodHelpText')}
                   helpTextWarning={authenticationMethod.value === 'none' ? translate('AuthenticationMethodHelpTextWarning') : undefined}
-                  helpLink="https://wiki.servarr.com/readarr/faq#forced-authentication"
+                  helpLink={getDocsUrl('settings', 'authentication')}
                   onChange={onInputChange}
                   {...authenticationMethod}
                 />
