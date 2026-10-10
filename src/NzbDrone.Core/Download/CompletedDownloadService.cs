@@ -5,7 +5,6 @@ using System.Linq;
 using NLog;
 using NzbDrone.Common.EnvironmentInfo;
 using NzbDrone.Common.Extensions;
-using NzbDrone.Common.Instrumentation.Extensions;
 using NzbDrone.Core.Books;
 using NzbDrone.Core.Datastore;
 using NzbDrone.Core.Download.TrackedDownloads;
@@ -196,7 +195,6 @@ namespace NzbDrone.Core.Download
                            .Property("DownloadId", trackedDownload.DownloadItem.DownloadId)
                            .Property("Title", trackedDownload.DownloadItem.Title)
                            .Property("Path", trackedDownload.DownloadItem.OutputPath.ToString())
-                           .WriteSentryWarn("DownloadHistoryIncomplete")
                            .Log();
                 }
 

@@ -41,7 +41,6 @@ namespace NzbDrone.Update
                     .AddNzbDroneLogger()
                     .AddStartupContext(startupContext);
 
-                container.Resolve<InitializeLogger>().Initialize();
                 container.Resolve<UpdateApp>().Start(args);
 
                 Logger.Info("Update completed successfully");
