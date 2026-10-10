@@ -23,6 +23,12 @@ All notable changes to the fork are recorded here.
 
 ### New
 
+- **Support this project on Ko-fi.** The heart in the header and **System → Status →
+  Donations** linked to the Open Collective pages of the original Readarr, which is retired, and
+  its sibling projects. They now link to this project's
+  [Ko-fi page](https://ko-fi.com/timothyrice). Donating is entirely optional; nothing in Readarr
+  asks or changes either way.
+
 - **Documentation for this project.** The "more info" links on health checks, integrations and
   settings opened the original Readarr wiki, which describes a different project and knows nothing
   of this fork's own features. They now open documentation written for this project, covering

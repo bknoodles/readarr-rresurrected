@@ -77,8 +77,9 @@ class PageHeader extends Component {
           <IconButton
             className={styles.donate}
             name={icons.HEART}
-            aria-label="Donate"
-            to="https://opencollective.com/readarr"
+            aria-label="Support this project on Ko-fi"
+            title="Support this project on Ko-fi"
+            to="https://ko-fi.com/timothyrice"
             size={14}
           />
           <PageHeaderActionsMenuConnector

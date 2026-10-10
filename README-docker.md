@@ -144,6 +144,11 @@ Release notes are kept in [CHANGELOG.md](https://github.com/ricetim/readarr-rres
 
 [github.com/ricetim/readarr-rresurrected/issues](https://github.com/ricetim/readarr-rresurrected/issues)
 
+## Support the project
+
+If readarr-rresurrected is useful to you, you can support its development on
+[Ko-fi](https://ko-fi.com/timothyrice). Entirely optional: everything works the same either way.
+
 ## License
 
 [GNU GPL v3](https://github.com/ricetim/readarr-rresurrected/blob/develop/LICENSE.md)

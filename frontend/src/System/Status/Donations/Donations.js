@@ -3,6 +3,8 @@ import FieldSet from 'Components/FieldSet';
 import Link from 'Components/Link/Link';
 import styles from '../styles.css';
 
+const kofiUrl = 'https://ko-fi.com/timothyrice';
+
 class Donations extends Component {
 
   //
@@ -11,46 +13,17 @@ class Donations extends Component {
   render() {
     return (
       <FieldSet legend="Donations">
-        <div className={styles.logoContainer} title="Radarr">
-          <Link to="https://opencollective.com/radarr">
-            <img
-              className={styles.logo}
-              src={`${window.Readarr.urlBase}/Content/Images/Icons/logo-radarr.png`}
-            />
-          </Link>
-        </div>
-        <div className={styles.logoContainer} title="Lidarr">
-          <Link to="https://opencollective.com/lidarr">
-            <img
-              className={styles.logo}
-              src={`${window.Readarr.urlBase}/Content/Images/Icons/logo-lidarr.png`}
-            />
-          </Link>
-        </div>
-        <div className={styles.logoContainer} title="Readarr">
-          <Link to="https://opencollective.com/readarr">
+        <div className={styles.logoContainer} title="Support readarr-rresurrected on Ko-fi">
+          <Link to={kofiUrl}>
             <img
               className={styles.logo}
               src={`${window.Readarr.urlBase}/Content/Images/Icons/logo-readarr.png`}
             />
           </Link>
         </div>
-        <div className={styles.logoContainer} title="Prowlarr">
-          <Link to="https://opencollective.com/prowlarr">
-            <img
-              className={styles.logo}
-              src={`${window.Readarr.urlBase}/Content/Images/Icons/logo-prowlarr.png`}
-            />
-          </Link>
-        </div>
-        <div className={styles.logoContainer} title="Sonarr">
-          <Link to="https://opencollective.com/sonarr">
-            <img
-              className={styles.logo}
-              src={`${window.Readarr.urlBase}/Content/Images/Icons/logo-sonarr.png`}
-            />
-          </Link>
-        </div>
+        <span className={styles.donationText}>
+          If readarr-rresurrected is useful to you, you can support its development on <Link to={kofiUrl}>Ko-fi</Link>.
+        </span>
       </FieldSet>
     );
   }

@@ -197,6 +197,13 @@ Found a bug? Have a feature request? [Open an issue](https://github.com/ricetim/
 
 ---
 
+## Support the project
+
+If readarr-rresurrected is useful to you, you can support its development on
+[Ko-fi](https://ko-fi.com/timothyrice). Entirely optional: everything works the same either way.
+
+---
+
 ## Credits & Acknowledgements
 
 This project stands on the shoulders of a lot of excellent prior work:
