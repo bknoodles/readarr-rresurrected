@@ -23,6 +23,12 @@ All notable changes to the fork are recorded here.
 
 ### New
 
+### Fixed
+
+## [11.2.4] - 2026-10-10
+
+### New
+
 - **Support this project on Ko-fi.** The heart in the header and **System → Status →
   Donations** linked to the Open Collective pages of the original Readarr, which is retired, and
   its sibling projects. They now link to this project's
