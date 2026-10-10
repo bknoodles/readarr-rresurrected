@@ -9,6 +9,7 @@ on:
       - 'CHANGELOG.md'
       - '.github/scripts/changelog_to_feed.py'
       - '.github/workflows/pages.yml'
+      - '.github/server-notifications.json'
   workflow_dispatch:
 
 permissions:
@@ -37,6 +38,14 @@ jobs:
             --out _site \
             --branch develop \
             --package-url "https://hub.docker.com/r/ricetim/readarr-rresurrected/tags"
+
+      # Readarr fetches v1/notification on start and every 2 hours, and shows each entry as a
+      # health check in System -> Status. An empty list means nothing to show; a missing file
+      # made every install log "Failed to retrieve server notifications". Entries look like
+      # {"type": "warning", "message": "...", "wikiUrl": "https://..."}, with type one of
+      # notice, warning or error. ServerSideNotificationServiceFixture pins the format.
+      - name: Publish server notifications
+        run: cp .github/server-notifications.json _site/v1/notification
 
       - name: Add a landing page
         run: |
