@@ -23,8 +23,19 @@ All notable changes to the fork are recorded here.
 
 ### New
 
+- **Documentation for this project.** The "more info" links on health checks, integrations and
+  settings opened the original Readarr wiki, which describes a different project and knows nothing
+  of this fork's own features. They now open documentation written for this project, covering
+  every health check, every integration (including MyAnonamouse and Bibliotik), troubleshooting,
+  and the settings that need explaining. It lives in the
+  [docs folder](https://github.com/ricetim/readarr-rresurrected/tree/develop/docs) of the
+  repository.
+
 ### Fixed
 
+- **The Metadata Source setting is removed** from Settings → Development. It hadn't done anything
+  since the metadata server moved into the container. To use a different server, set the
+  `READARR_METADATA_URL` environment variable instead.
 - **Help and support links now point to this project.** System → Status → More Info linked to
   the original Readarr's website, wiki, Reddit and Discord, and to its archived issue tracker,
   where bug reports go unread. It now links to this project's GitHub page, issues and releases.

@@ -218,5 +218,11 @@ fixtures under `src/NzbDrone.Core.Test/Files/Indexers/<Name>/`.
 
 ## Scratch and Design Notes
 
-- `docs/` — durable design docs (e.g. `file-to-book-matching.md`) and dated implementation plans under `docs/plans/`.
+- `docs/*.md` — **user documentation**, read on GitHub: `health-checks.md`, `settings.md`,
+  `supported.md`, `troubleshooting.md`. The app links to their headings through `DocsUrls`
+  (`src/NzbDrone.Core/Docs/DocsUrls.cs`) and `getDocsUrl` (`frontend/src/Utilities/getDocsUrl.js`);
+  health checks link by their `#fragment`, integrations by their display name. After renaming a
+  heading, a health check fragment or an integration, run
+  `python3 .github/scripts/check_docs_anchors.py`, which fails on any link without a heading.
+- `docs/plans/`, `docs/superpowers/` — developers' design docs and dated implementation plans.
 - `.dev/` — untracked working notes, captured tracker API pages, and cache/webhook design drafts. Useful background, but treat as scratch rather than spec.
