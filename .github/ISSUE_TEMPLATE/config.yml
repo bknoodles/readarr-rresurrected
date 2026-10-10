@@ -1,5 +1,3 @@
-blank_issues_enabled: false
-contact_links:
-  - name: Support via Discord
-    url: https://readarr.com/discord
-    about: Chat with users and devs on support and setup related topics.
+# Blank issues stay open: GitHub Issues is this project's only support channel, so questions
+# that aren't bug reports or feature requests need somewhere to go.
+blank_issues_enabled: true
