@@ -8,6 +8,8 @@ This image bundles a self-hosted metadata service (`bookinfo`) directly inside t
 
 **GitHub:** [github.com/ricetim/readarr-rresurrected](https://github.com/ricetim/readarr-rresurrected) — bug reports and feature requests welcome.
 
+**Documentation:** [health checks, settings, supported integrations and troubleshooting](https://github.com/ricetim/readarr-rresurrected/tree/develop/docs)
+
 ---
 
 ## Quick Start

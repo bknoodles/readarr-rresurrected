@@ -11,6 +11,8 @@
 
 **Docker image:** [`ricetim/readarr-rresurrected` on Docker Hub](https://hub.docker.com/r/ricetim/readarr-rresurrected)
 
+**Documentation:** [health checks, settings, supported integrations and troubleshooting](https://github.com/ricetim/readarr-rresurrected/tree/develop/docs)
+
 ---
 
 ## The Story
