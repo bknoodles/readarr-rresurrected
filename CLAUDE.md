@@ -179,6 +179,12 @@ redirects were not followed and Sentry reporting ignored the analytics setting. 
 telemetry: Sentry and analytics were removed, because their endpoints belong to the original
 Readarr project. Don't reintroduce `sentry.servarr.com`, piwik or similar endpoints.
 
+**Server notifications:** `.github/server-notifications.json` is published by `pages.yml` as
+`v1/notification`, which every install fetches at start and every 2 hours, showing each entry as a
+health check in System → Status. Keep it `[]` unless there's something every user must see; entries
+look like `{"type": "warning", "message": "...", "wikiUrl": "https://..."}`.
+`ServerSideNotificationServiceFixture` fails if the file stops parsing.
+
 **LazyLoaded properties:** Many model properties use `LazyLoaded<T>` — these are populated on-demand by the repository layer and should not be assumed to be populated unless explicitly queried.
 
 **Adding a native indexer:** Follow the five-file convention used by `Indexers/MyAnonamouse/` and

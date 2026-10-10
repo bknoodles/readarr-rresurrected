@@ -25,6 +25,18 @@ All notable changes to the fork are recorded here.
 
 ### Fixed
 
+- **Help and support links now point to this project.** System → Status → More Info linked to
+  the original Readarr's website, wiki, Reddit and Discord, and to its archived issue tracker,
+  where bug reports go unread. It now links to this project's GitHub page, issues and releases.
+- **Goodreads Bookshelves and Owned Books are removed,** both the import lists and the
+  notifications. They signed in to Goodreads through the original Readarr project's
+  authentication service, so your Goodreads credentials passed through a server this project
+  doesn't control, for an API Goodreads closed to new developers in 2020. Any you had set up are
+  removed automatically on the next start. Goodreads List and Goodreads Series imports remain.
+- **No more "Failed to retrieve server notifications" error** in the log at every start.
+- **A few warnings no longer appear twice in the log,** a side effect of removing error
+  reporting in 11.2.3.
+
 ## [11.2.3] - 2026-10-10
 
 ### Fixed
