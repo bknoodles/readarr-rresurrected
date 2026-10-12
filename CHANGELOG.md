@@ -25,6 +25,10 @@ All notable changes to the fork are recorded here.
 
 ### Fixed
 
+## [11.2.5] - 2026-10-12
+
+### Fixed
+
 - **Series keep their books after an author refresh.** Refreshing an author could save the links
   between a series and its books without the book's database ID. On PostgreSQL the refresh failed
   with a `FK_SeriesBookLink_BookId_Books_Id` error; on SQLite, the default, the broken links were
