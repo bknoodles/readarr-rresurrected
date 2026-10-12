@@ -25,6 +25,13 @@ All notable changes to the fork are recorded here.
 
 ### Fixed
 
+- **Series keep their books after an author refresh.** Refreshing an author could save the links
+  between a series and its books without the book's database ID. On PostgreSQL the refresh failed
+  with a `FK_SeriesBookLink_BookId_Books_Id` error; on SQLite, the default, the broken links were
+  saved silently, so series could show missing books. Links are now resolved against the books in
+  your library, and the next complete refresh of an author replaces any broken ones. Fixed by
+  [@icco](https://github.com/icco) in [#13](https://github.com/ricetim/readarr-rresurrected/pull/13).
+
 ## [11.2.4] - 2026-10-10
 
 ### New
