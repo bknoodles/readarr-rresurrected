@@ -178,7 +178,15 @@ namespace NzbDrone.Host
                 options.PayloadSerializerOptions = STJson.GetSerializerSettings();
             });
 
+            // Data protection scopes its keys by an application discriminator. .NET 6 used the content
+            // root path exactly as given ("/config"); .NET 8 appends a separator ("/config/"), which made
+            // every login cookie issued before the .NET 8 upgrade invalid. Naming the application
+            // explicitly, as .NET 6 did, keeps those cookies working and stops the scope changing with
+            // the framework again. The content root is the working directory (see Bootstrap).
+            var applicationName = Directory.GetCurrentDirectory();
+
             services.AddDataProtection()
+                .SetApplicationName(applicationName)
                 .PersistKeysToFileSystem(new DirectoryInfo(Configuration["dataProtectionFolder"]));
 
             services.AddSingleton<IAuthorizationPolicyProvider, UiAuthorizationPolicyProvider>();
