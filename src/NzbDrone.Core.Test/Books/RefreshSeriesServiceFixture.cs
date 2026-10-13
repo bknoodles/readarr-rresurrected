@@ -147,5 +147,23 @@ namespace NzbDrone.Core.Test.Books
 
             LinksDeletedFromSeriesA().Should().ContainSingle().Which.Should().BeSameAs(_linkA2);
         }
+
+        // A metadata server can list a series without any works, which reaches here with no links.
+        [TestCase(true)]
+        [TestCase(false)]
+        public void should_refresh_other_series_when_one_has_no_links(bool nullLazyLoaded)
+        {
+            var empty = new Series
+            {
+                ForeignSeriesId = "sC",
+                Title = "Series C",
+                LinkItems = nullLazyLoaded ? null : new LazyLoaded<List<SeriesBookLink>>(null)
+            };
+            _remoteData.Series.Value.Add(empty);
+
+            Assert.DoesNotThrow(() => Refresh(partial: false));
+
+            LinksDeletedFromSeriesA().Should().ContainSingle().Which.Should().BeSameAs(_linkA2);
+        }
     }
 }

@@ -153,7 +153,7 @@ namespace NzbDrone.Core.Books
 
             foreach (var s in remoteData.Series.Value)
             {
-                foreach (var link in s.LinkItems.Value)
+                foreach (var link in s.LinkItems?.Value ?? new List<SeriesBookLink>())
                 {
                     link.Series = s;
                     if (bookDict.TryGetValue(link.Book.Value.ForeignBookId, out var book))

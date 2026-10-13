@@ -1,11 +1,15 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using FizzWare.NBuilder;
+using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using NzbDrone.Core.Books;
+using NzbDrone.Core.Datastore;
 using NzbDrone.Core.ImportLists;
 using NzbDrone.Core.Lifecycle;
+using NzbDrone.Core.MediaFiles;
 using NzbDrone.Core.Profiles.Metadata;
 using NzbDrone.Core.RootFolders;
 using NzbDrone.Core.Test.Framework;
@@ -223,6 +227,72 @@ namespace NzbDrone.Core.Test.Profiles.Metadata
             Subject.Delete(1);
 
             Mocker.GetMock<IMetadataProfileRepository>().Verify(c => c.Delete(1), Times.Once());
+        }
+
+        private static Book GivenRemoteBook(string id)
+        {
+            return new Book
+            {
+                ForeignBookId = id,
+                Title = $"Book {id}",
+                Ratings = new Ratings { Votes = 100, Value = 4 },
+                ReleaseDate = DateTime.UtcNow.AddYears(-1),
+                Editions = new List<Edition> { new Edition { ForeignEditionId = $"e{id}", Title = $"Book {id}", PageCount = 300 } }
+            };
+        }
+
+        private List<Book> FilterWithSeries(List<Series> series, params Book[] books)
+        {
+            var profile = new MetadataProfile { Id = 1, SkipSeriesSecondary = true, Ignored = new List<string>() };
+
+            Mocker.GetMock<IMetadataProfileRepository>().Setup(s => s.Get(1)).Returns(profile);
+            Mocker.GetMock<IMediaFileService>().Setup(s => s.GetFilesByAuthor(It.IsAny<int>())).Returns(new List<BookFile>());
+
+            var author = new Author
+            {
+                Metadata = new AuthorMetadata { ForeignAuthorId = "100" },
+                Series = series == null ? null : new LazyLoaded<List<Series>>(series),
+                Books = new List<Book>(books)
+            };
+
+            return Subject.FilterBooks(author, 1);
+        }
+
+        // A metadata server can list a series without any works; until the payload is
+        // normalised that series reaches here with no links at all.
+        [TestCase(true)]
+        [TestCase(false)]
+        public void filter_books_should_ignore_series_without_links(bool nullLazyLoaded)
+        {
+            var primary = GivenRemoteBook("1");
+            var secondary = GivenRemoteBook("2");
+
+            var valid = new Series { ForeignSeriesId = "s1", Title = "Valid" };
+            valid.LinkItems = new List<SeriesBookLink>
+            {
+                new SeriesBookLink { Book = primary, Series = valid, IsPrimary = true },
+                new SeriesBookLink { Book = secondary, Series = valid, IsPrimary = false }
+            };
+
+            var empty = new Series
+            {
+                ForeignSeriesId = "s2",
+                Title = "Empty",
+                LinkItems = nullLazyLoaded ? null : new LazyLoaded<List<SeriesBookLink>>(null)
+            };
+
+            var result = FilterWithSeries(new List<Series> { empty, valid }, primary, secondary);
+
+            // the secondary-series rule still applies to the series that does have links
+            result.Select(x => x.ForeignBookId).Should().Equal("1");
+        }
+
+        [Test]
+        public void filter_books_should_handle_author_without_series()
+        {
+            var result = FilterWithSeries(null, GivenRemoteBook("1"));
+
+            result.Select(x => x.ForeignBookId).Should().Equal("1");
         }
     }
 }

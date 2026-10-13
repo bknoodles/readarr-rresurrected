@@ -502,14 +502,23 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
                 return books;
             }
 
+            resource.Authors ??= new List<AuthorResource>();
+            resource.Series ??= new List<SeriesResource>();
+            Normalize(resource.Series);
+
             var authors = resource.Authors.Select(MapAuthorMetadata).ToDictionary(x => x.ForeignAuthorId, x => x);
             var series = resource.Series.Select(MapSeries).ToList();
 
-            var sanitizedWorks = SanitizeWorks(resource.Works, _logger);
+            var sanitizedWorks = SanitizeWorks(resource.Works ?? new List<WorkResource>(), _logger);
+            Normalize(sanitizedWorks);
+
             foreach (var work in sanitizedWorks)
             {
                 var book = MapBook(work);
-                var authorId = work.Books.OrderByDescending(b => b.AverageRating * b.RatingCount).First().Contributors.First().ForeignId.ToString();
+
+                // The most rated edition may list no contributors; fall back to the work's own authors
+                var contributorId = GetAuthorId(work);
+                var authorId = (contributorId != 0 ? contributorId : work.Authors.First().ForeignId).ToString();
 
                 AddDbIds(authorId, book, authors);
 
@@ -640,6 +649,8 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
 
                 resource.Works = SanitizeWorks(resource.Works, _logger);
                 resource.Series ??= new List<SeriesResource>();
+                Normalize(resource.Works);
+                Normalize(resource.Series);
 
                 return MapAuthor(resource);
             }
@@ -730,6 +741,8 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
             {
                 throw new BookInfoException($"Failed to get books for {foreignBookId}");
             }
+
+            Normalize(new List<WorkResource> { resource });
 
             var book = MapBook(resource);
             var authorId = GetAuthorId(resource).ToString();
@@ -832,8 +845,14 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
                 book.SeriesLinks = new List<SeriesBookLink>();
             }
 
+            // A series with no works among these books still needs a list, not null
+            foreach (var s in series)
+            {
+                s.LinkItems = new List<SeriesBookLink>();
+            }
+
             // only take series where there are some works
-            foreach (var s in resource.Where(x => x.LinkItems.Any()))
+            foreach (var s in resource.Where(x => x.LinkItems != null && x.LinkItems.Any()))
             {
                 if (seriesDict.TryGetValue(s.ForeignId.ToString(), out var curr))
                 {
@@ -982,7 +1001,39 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
 
         private static int GetAuthorId(WorkResource b)
         {
-            return b.Books.OrderByDescending(x => x.RatingCount * x.AverageRating).FirstOrDefault(x => x.Contributors.Any())?.Contributors.First().ForeignId ?? 0;
+            return b.Books?
+                .OrderByDescending(x => x.RatingCount * x.AverageRating)
+                .FirstOrDefault(x => x.Contributors != null && x.Contributors.Any())?
+                .Contributors.First().ForeignId ?? 0;
+        }
+
+        // Metadata servers written in Go, rreading-glasses among them, send an empty list as null
+        // rather than [], and READARR_METADATA_URL can point at one. Make every list safe to read.
+        private static void Normalize(List<WorkResource> works)
+        {
+            foreach (var work in works)
+            {
+                work.Books ??= new List<BookResource>();
+                work.Series ??= new List<SeriesResource>();
+                work.Authors ??= new List<AuthorResource>();
+                work.Genres ??= new List<string>();
+                work.RelatedWorks ??= new List<int>();
+
+                foreach (var book in work.Books)
+                {
+                    book.Contributors ??= new List<ContributorResource>();
+                }
+
+                Normalize(work.Series);
+            }
+        }
+
+        private static void Normalize(List<SeriesResource> series)
+        {
+            foreach (var s in series)
+            {
+                s.LinkItems ??= new List<SeriesWorkLinkResource>();
+            }
         }
 
         private static List<WorkResource> SanitizeWorks(List<WorkResource> works, Logger logger)
