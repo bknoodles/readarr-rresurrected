@@ -231,6 +231,7 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
             catch (Exception e)
             {
                 _logger.Warn(e, "Error searching for {0}", query);
+                MetadataFailureScope.ReportFailure();
                 return new List<Book>();
             }
 
@@ -287,6 +288,7 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
                 catch (Exception e)
                 {
                     _logger.Warn(e, "Error mapping search results");
+                    MetadataFailureScope.ReportFailure();
 
                     return new List<Book>();
                 }
@@ -316,6 +318,7 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
             catch (BookInfoException e)
             {
                 _logger.Warn(e, "Error searching by author id");
+                MetadataFailureScope.ReportFailure();
                 return new List<Book>();
             }
         }
@@ -335,6 +338,7 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
             catch (BookInfoException e)
             {
                 _logger.Warn(e, "Error searching by work id");
+                MetadataFailureScope.ReportFailure();
                 return new List<Book>();
             }
         }
@@ -362,6 +366,7 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
             catch (BookInfoException e)
             {
                 _logger.Warn(e, "Error searching by book id");
+                MetadataFailureScope.ReportFailure();
                 return new List<Book>();
             }
         }

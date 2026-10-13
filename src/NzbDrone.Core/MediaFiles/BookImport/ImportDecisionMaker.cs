@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO.Abstractions;
 using System.Linq;
 using NLog;
+using NzbDrone.Common;
 using NzbDrone.Common.Extensions;
 using NzbDrone.Common.Instrumentation.Extensions;
 using NzbDrone.Core.Books;
@@ -48,6 +49,10 @@ namespace NzbDrone.Core.MediaFiles.BookImport
 
     public class ImportDecisionMaker : IMakeImportDecision
     {
+        // How long a rescan trusts "searched, no match" before asking again, so books added to
+        // Goodreads later are still found
+        private static readonly TimeSpan RemoteSearchRetryAfter = TimeSpan.FromDays(30);
+
         private readonly IEnumerable<IImportDecisionEngineSpecification<LocalBook>> _trackSpecifications;
         private readonly IEnumerable<IImportDecisionEngineSpecification<LocalEdition>> _bookSpecifications;
         private readonly IMediaFileService _mediaFileService;
@@ -96,6 +101,12 @@ namespace NzbDrone.Core.MediaFiles.BookImport
                 return Tuple.Create(localTracks, decisions);
             }
 
+            // Rescans don't search the metadata service again for an unchanged file it recently
+            // couldn't identify. Downloads, manual imports and full scans always search.
+            var remoteSearched = filter == FilterFilesType.Matched
+                ? GetRecentRemoteSearches(files)
+                : new Dictionary<string, DateTime>();
+
             ParsedBookInfo downloadClientItemInfo = null;
 
             if (downloadClientItem != null)
@@ -119,7 +130,8 @@ namespace NzbDrone.Core.MediaFiles.BookImport
                     Size = file.Length,
                     Modified = file.LastWriteTimeUtc,
                     FileTrackInfo = fileTrackInfo,
-                    AdditionalFile = false
+                    AdditionalFile = false,
+                    LastRemoteSearchTime = remoteSearched.TryGetValue(file.FullName, out var searched) ? searched : null
                 };
 
                 try
@@ -143,6 +155,26 @@ namespace NzbDrone.Core.MediaFiles.BookImport
             _logger.Debug($"Tags parsed for {files.Count} files in {watch.ElapsedMilliseconds}ms");
 
             return Tuple.Create(localTracks, decisions);
+        }
+
+        private Dictionary<string, DateTime> GetRecentRemoteSearches(List<IFileInfo> files)
+        {
+            var since = DateTime.UtcNow - RemoteSearchRetryAfter;
+            var onDisk = files.ToDictionary(x => x.FullName, PathEqualityComparer.Instance);
+            var result = new Dictionary<string, DateTime>(PathEqualityComparer.Instance);
+
+            foreach (var file in _mediaFileService.GetFileWithPath(onDisk.Keys.ToList()))
+            {
+                if (file.LastRemoteSearchTime > since &&
+                    onDisk.TryGetValue(file.Path, out var disk) &&
+                    disk.Length == file.Size &&
+                    Math.Abs((disk.LastWriteTimeUtc - file.Modified.ToUniversalTime()).TotalSeconds) <= 1)
+                {
+                    result[file.Path] = file.LastRemoteSearchTime.Value;
+                }
+            }
+
+            return result;
         }
 
         public List<ImportDecision<LocalBook>> GetImportDecisions(List<IFileInfo> musicFiles, IdentificationOverrides idOverrides, ImportDecisionMakerInfo itemInfo, ImportDecisionMakerConfig config)

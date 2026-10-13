@@ -34,6 +34,9 @@ namespace NzbDrone.Core.Parser.Model
         public List<LocalBook> ExistingTracks { get; set; }
         public bool NewDownload { get; set; }
 
+        // Whether identification asked the metadata service about these files
+        public bool RemoteSearched { get; set; }
+
         public void PopulateMatch(bool keepAllEditions)
         {
             if (Edition != null)

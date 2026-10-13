@@ -29,6 +29,9 @@ namespace NzbDrone.Core.Parser.Model
         public bool SceneSource { get; set; }
         public string SceneName { get; set; }
 
+        // See BookFile.LastRemoteSearchTime: loaded for rescans, set again by identification
+        public DateTime? LastRemoteSearchTime { get; set; }
+
         public override string ToString()
         {
             return Path;

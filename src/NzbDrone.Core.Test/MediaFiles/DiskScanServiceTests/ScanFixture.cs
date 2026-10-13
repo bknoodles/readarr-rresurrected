@@ -560,5 +560,63 @@ namespace NzbDrone.Core.Test.MediaFiles.DiskScanServiceTests
                                           l[0].MediaInfo.AudioFormat == localTrack.FileTrackInfo.MediaInfo.AudioFormat)),
                         Times.Once());
         }
+
+        private void GivenRejectedDecision(string path, long size, DateTime modified, DateTime? lastRemoteSearch)
+        {
+            var localTrack = new LocalBook
+            {
+                Path = path,
+                Size = size,
+                Modified = modified,
+                Quality = new QualityModel(Quality.EPUB),
+                FileTrackInfo = new ParsedTrackInfo(),
+                LastRemoteSearchTime = lastRemoteSearch
+            };
+
+            Mocker.GetMock<IMakeImportDecision>()
+                .Setup(x => x.GetImportDecisions(It.IsAny<List<IFileInfo>>(), It.IsAny<IdentificationOverrides>(), It.IsAny<ImportDecisionMakerInfo>(), It.IsAny<ImportDecisionMakerConfig>()))
+                .Returns(new List<ImportDecision<LocalBook>> { new ImportDecision<LocalBook>(localTrack, new Rejection("Couldn't find similar book")) });
+        }
+
+        [Test]
+        public void should_save_the_remote_search_record_on_a_new_unmatched_file()
+        {
+            GivenAuthorFolder();
+
+            var file = Path.Combine(_author.Path, "unknown.epub");
+            var searched = DateTime.UtcNow;
+
+            GivenFiles(new[] { file });
+            GivenKnownFiles(new List<string>());
+            GivenRejectedDecision(file, 0, new DateTime(2019, 1, 1, 0, 0, 0, DateTimeKind.Utc), searched);
+
+            Subject.Scan(new List<string> { _author.Path });
+
+            Mocker.GetMock<IMediaFileService>()
+                .Verify(x => x.AddMany(It.Is<List<BookFile>>(l => l.Single().LastRemoteSearchTime == searched)), Times.Once());
+        }
+
+        [TestCase(true)]
+        [TestCase(false)]
+        public void should_update_the_remote_search_record_on_an_unchanged_known_file(bool searchedNow)
+        {
+            GivenAuthorFolder();
+
+            var file = Path.Combine(_author.Path, "unknown.epub");
+            var modified = new DateTime(2019, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+            var previous = searchedNow ? (DateTime?)null : DateTime.UtcNow.AddDays(-40);
+            var current = searchedNow ? DateTime.UtcNow : (DateTime?)null;
+
+            GivenFiles(new[] { file });
+            Mocker.GetMock<IMediaFileService>()
+                .Setup(x => x.GetFilesWithBasePath(_author.Path))
+                .Returns(new List<BookFile> { new BookFile { Path = file, Size = 0, Modified = modified, LastRemoteSearchTime = previous } });
+            GivenRejectedDecision(file, 0, modified, current);
+
+            Subject.Scan(new List<string> { _author.Path });
+
+            Mocker.GetMock<IMediaFileService>()
+                .Verify(x => x.Update(It.Is<List<BookFile>>(l => l.Count == 1 && l[0].LastRemoteSearchTime == current)), Times.Once());
+        }
     }
 }

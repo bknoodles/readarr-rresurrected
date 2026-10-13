@@ -23,6 +23,10 @@ namespace NzbDrone.Core.MediaFiles
         public int CalibreId { get; set; }
         public int Part { get; set; }
 
+        // When the metadata service was last searched for this file without finding a match.
+        // Rescans don't search again while it's recent and the file is unchanged.
+        public DateTime? LastRemoteSearchTime { get; set; }
+
         // These are queried from the database
         public LazyLoaded<Author> Author { get; set; }
         public LazyLoaded<Edition> Edition { get; set; }

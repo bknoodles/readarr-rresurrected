@@ -36,7 +36,7 @@ The backend is split into these key assemblies (all loaded at startup via `Boots
 
 **Dependency injection:** DryIoc. Services are auto-discovered by convention (interfaces `IFoo` implemented by `Foo` in the same assembly).
 
-**Data access:** Dapper ORM against SQLite (default) or PostgreSQL. Repositories inherit from `BasicRepository<TModel>`. Database migrations are sequential numbered files in `src/NzbDrone.Core/Datastore/Migration/` (currently through `045_add_missing_kca_column.cs`).
+**Data access:** Dapper ORM against SQLite (default) or PostgreSQL. Repositories inherit from `BasicRepository<TModel>`. Database migrations are sequential numbered files in `src/NzbDrone.Core/Datastore/Migration/` (currently through `046_bookfile_last_remote_search.cs`).
 
 **Command/event bus:** `NzbDrone.Core.Messaging` — commands implement `IExecute<TCommand>`, events implement `IHandle<TEvent>`. This is the primary way services communicate.
 

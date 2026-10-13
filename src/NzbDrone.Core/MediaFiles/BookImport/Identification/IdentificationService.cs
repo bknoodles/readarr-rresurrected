@@ -7,6 +7,7 @@ using NLog;
 using NzbDrone.Common.Extensions;
 using NzbDrone.Common.Instrumentation.Extensions;
 using NzbDrone.Core.MediaFiles.BookImport.Aggregation;
+using NzbDrone.Core.MetadataSource;
 using NzbDrone.Core.Parser.Model;
 
 namespace NzbDrone.Core.MediaFiles.BookImport.Identification
@@ -151,8 +152,20 @@ namespace NzbDrone.Core.MediaFiles.BookImport.Identification
                 }
             }
 
+            using (var failures = MetadataFailureScope.Begin())
+            {
+                MatchRelease(localBookRelease, idOverrides, config);
+                RecordRemoteSearch(localBookRelease, failures.Failed);
+            }
+        }
+
+        private void MatchRelease(LocalEdition localBookRelease, IdentificationOverrides idOverrides, ImportDecisionMakerConfig config)
+        {
             var watch = System.Diagnostics.Stopwatch.StartNew();
             var usedRemote = false;
+
+            // Only set for an unchanged file during a rescan (see ImportDecisionMaker)
+            var searchedRecently = localBookRelease.LocalBooks.Any() && localBookRelease.LocalBooks.All(x => x.LastRemoteSearchTime.HasValue);
 
             IEnumerable<CandidateEdition> candidateReleases = _candidateService.GetDbCandidatesFromTags(localBookRelease, idOverrides, config.IncludeExisting);
 
@@ -164,7 +177,12 @@ namespace NzbDrone.Core.MediaFiles.BookImport.Identification
 
             _logger.Debug($"Retrieved {allLocalTracks.Count} possible tracks in {watch.ElapsedMilliseconds}ms");
 
-            if (!candidateReleases.Any())
+            if (!candidateReleases.Any() && searchedRecently)
+            {
+                _logger.Debug("No local candidates found, and the metadata service found no match for these files on {0}; not searching again",
+                    localBookRelease.LocalBooks.Max(x => x.LastRemoteSearchTime));
+            }
+            else if (!candidateReleases.Any())
             {
                 _logger.Debug("No local candidates found, trying remote");
                 candidateReleases = _candidateService.GetRemoteCandidates(localBookRelease, idOverrides);
@@ -194,7 +212,7 @@ namespace NzbDrone.Core.MediaFiles.BookImport.Identification
 
             // If the result isn't great and we haven't tried remote candidates, try looking for remote candidates
             // Goodreads may have a better edition of a local book
-            if (localBookRelease.Distance.NormalizedDistance() > 0.15 && !usedRemote)
+            if (localBookRelease.Distance.NormalizedDistance() > 0.15 && !usedRemote && !searchedRecently)
             {
                 _logger.Debug("Match not good enough, trying remote candidates");
                 candidateReleases = _candidateService.GetRemoteCandidates(localBookRelease, idOverrides);
@@ -212,6 +230,22 @@ namespace NzbDrone.Core.MediaFiles.BookImport.Identification
             localBookRelease.PopulateMatch(config.KeepAllEditions);
 
             _logger.Debug($"IdentifyRelease done in {watch.ElapsedMilliseconds}ms");
+        }
+
+        // A file the metadata service was asked about and couldn't identify is recorded, so rescans
+        // don't ask again. A match clears the record, and so does a failed search, which proves
+        // nothing. When nothing was asked the record stays as it was, so it still expires.
+        private static void RecordRemoteSearch(LocalEdition localBookRelease, bool searchFailed)
+        {
+            if (localBookRelease.Edition != null || (localBookRelease.RemoteSearched && searchFailed))
+            {
+                localBookRelease.LocalBooks.ForEach(x => x.LastRemoteSearchTime = null);
+            }
+            else if (localBookRelease.RemoteSearched)
+            {
+                var now = DateTime.UtcNow;
+                localBookRelease.LocalBooks.ForEach(x => x.LastRemoteSearchTime = now);
+            }
         }
 
         private void GetBestRelease(LocalEdition localBookRelease, IEnumerable<CandidateEdition> candidateReleases, List<LocalBook> extraTracksOnDisk, out bool seenCandidate)
