@@ -23,7 +23,33 @@ All notable changes to the fork are recorded here.
 
 ### New
 
+- **Rescans stop searching Goodreads again for files they can't identify.** Every rescan used to
+  search for each unidentified file in your library again, adding to the requests that get
+  Goodreads to block you. A search that finds nothing is now remembered for 30 days, or until the
+  file changes. Such files are still matched against the books already in your library, and
+  downloads and manual imports always search. Based on [Bookshelf #183](https://github.com/pennydreadful/bookshelf/pull/183).
+
 ### Fixed
+
+- **Update All on the author index refreshes your authors.** Unless authors were selected in the
+  editor, it refreshed none of them.
+- **Goodreads Series import lists import the whole series.** They stopped after the first 100
+  works: Nancy Drew Mystery Stories has 175, The Hardy Boys 238. From [Bookshelf #151](https://github.com/pennydreadful/bookshelf/pull/151).
+- **Books sent to Calibre get the right language.** Calibre before 9.14 read the language Readarr
+  sent one letter at a time, so every book was tagged with the language "E". Books already
+  affected are corrected the next time Readarr updates them in Calibre. Reported in
+  [Bookshelf #119](https://github.com/pennydreadful/bookshelf/pull/119).
+- **Metadata servers that send empty lists as `null` work.** rreading-glasses, among others, does
+  this, so with `READARR_METADATA_URL` pointing at one, adding or refreshing some authors failed and
+  some searches returned nothing. From [Bookshelf #85](https://github.com/pennydreadful/bookshelf/pull/85), [#93](https://github.com/pennydreadful/bookshelf/pull/93) and [#111](https://github.com/pennydreadful/bookshelf/pull/111).
+- **Refreshing a book that has been removed from Goodreads no longer fails**, and no longer stops a
+  refresh of several books partway through.
+- **Retagging an audiobook no longer fails** when its tags hold only an original year and the book
+  has no release date. From [Bookshelf #161](https://github.com/pennydreadful/bookshelf/pull/161).
+- **The column headers of a book's file list line up with the columns.** Each header sat one
+  column to the right of its values. From [Bookshelf #86](https://github.com/pennydreadful/bookshelf/pull/86).
+- **Passwords and API keys are hidden in the container's log output** (`docker logs`), as they
+  already were in Readarr's log files. Builds on [Bookshelf #149](https://github.com/pennydreadful/bookshelf/pull/149).
 
 ## [11.3.0] - 2026-10-13
 
