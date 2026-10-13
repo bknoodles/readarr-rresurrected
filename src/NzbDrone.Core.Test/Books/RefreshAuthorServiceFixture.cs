@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using FizzWare.NBuilder;
 using Moq;
 using NUnit.Framework;
@@ -9,6 +10,7 @@ using NzbDrone.Core.Datastore;
 using NzbDrone.Core.ImportLists.Exclusions;
 using NzbDrone.Core.MediaFiles.Commands;
 using NzbDrone.Core.Messaging.Commands;
+using NzbDrone.Core.MetadataSource;
 using NzbDrone.Core.Profiles.Metadata;
 using NzbDrone.Core.RootFolders;
 using NzbDrone.Core.Test.Framework;
@@ -136,6 +138,47 @@ namespace NzbDrone.Core.Test.Books
 
             Mocker.GetMock<IRefreshSeriesService>()
                 .Verify(s => s.RefreshSeriesInfo(5, It.IsAny<List<Series>>(), It.Is<Author>(a => a.IsPartial == partial), false, false, null), Times.Once);
+        }
+
+        // The author index's Update All button sends BulkRefreshAuthor with no author ids unless
+        // authors are selected in the editor. That has to mean every author, not none.
+        [TestCase(true)]
+        [TestCase(false)]
+        public void bulk_refresh_without_author_ids_should_refresh_every_author(bool nullIds)
+        {
+            var other = Builder<Author>.CreateNew()
+                .With(a => a.Id = 2)
+                .With(a => a.Path = "/books/Ursula K. Le Guin")
+                .With(a => a.Metadata = new AuthorMetadata { ForeignAuthorId = "a2", Name = "Ursula K. Le Guin" })
+                .Build();
+            _author.Metadata = new AuthorMetadata { ForeignAuthorId = "a1", Name = "Terry Pratchett" };
+
+            var all = new List<Author> { _author, other };
+
+            // behave like the repository: an empty id list loads nobody
+            Mocker.GetMock<IAuthorService>()
+                .Setup(s => s.GetAuthors(It.IsAny<IEnumerable<int>>()))
+                .Returns<IEnumerable<int>>(ids => all.Where(a => ids.Contains(a.Id)).ToList());
+
+            Mocker.GetMock<IAuthorService>()
+                .Setup(s => s.GetAllAuthors())
+                .Returns(all);
+
+            Subject.Execute(new BulkRefreshAuthorCommand(nullIds ? null : new List<int>()));
+
+            Mocker.GetMock<IProvideAuthorInfo>().Verify(s => s.GetAuthorInfo("a1", It.IsAny<bool>()), Times.Once());
+            Mocker.GetMock<IProvideAuthorInfo>().Verify(s => s.GetAuthorInfo("a2", It.IsAny<bool>()), Times.Once());
+        }
+
+        [Test]
+        public void bulk_refresh_with_author_ids_should_refresh_only_those_authors()
+        {
+            _author.Metadata = new AuthorMetadata { ForeignAuthorId = "a1", Name = "Terry Pratchett" };
+
+            Subject.Execute(new BulkRefreshAuthorCommand(new List<int> { 1 }));
+
+            Mocker.GetMock<IAuthorService>().Verify(s => s.GetAllAuthors(), Times.Never());
+            Mocker.GetMock<IProvideAuthorInfo>().Verify(s => s.GetAuthorInfo("a1", It.IsAny<bool>()), Times.Once());
         }
     }
 }

@@ -372,6 +372,12 @@ namespace NzbDrone.Core.Books
         {
             var data = GetSkyhookData(book);
 
+            // Not found upstream, already logged; the book is kept as it is
+            if (data == null)
+            {
+                return false;
+            }
+
             return RefreshBookInfo(book, data.Books, data, false);
         }
 
@@ -381,7 +387,14 @@ namespace NzbDrone.Core.Books
 
             foreach (var book in books)
             {
-                RefreshBookInfo(book);
+                try
+                {
+                    RefreshBookInfo(book);
+                }
+                catch (Exception e)
+                {
+                    _logger.Error(e, "Couldn't refresh info for {0}", book);
+                }
             }
         }
 

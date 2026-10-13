@@ -416,7 +416,12 @@ namespace NzbDrone.Core.Books
 
         public void Execute(BulkRefreshAuthorCommand message)
         {
-            RefreshSelectedAuthors(message.AuthorIds, message.AreNewAuthors, message.Trigger);
+            // The author index's Update All button sends no ids unless authors are selected in the editor
+            var authorIds = message.AuthorIds != null && message.AuthorIds.Any()
+                ? message.AuthorIds
+                : _authorService.GetAllAuthors().Select(x => x.Id).ToList();
+
+            RefreshSelectedAuthors(authorIds, message.AreNewAuthors, message.Trigger);
         }
 
         public void Execute(RefreshAuthorCommand message)
