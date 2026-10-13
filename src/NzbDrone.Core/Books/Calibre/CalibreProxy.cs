@@ -244,6 +244,9 @@ namespace NzbDrone.Core.Books.Calibre
             var textInfo = CultureInfo.InvariantCulture.TextInfo;
             var genres = book.Genres.Select(x => textInfo.ToTitleCase(x.Replace('-', ' '))).ToList();
 
+            // Left out when unknown, so a language set in Calibre is kept
+            var language = edition.Language.CanonicalizeLanguage();
+
             var payload = new CalibreChangesPayload
             {
                 LoadedBookIds = new List<int> { file.CalibreId },
@@ -254,7 +257,7 @@ namespace NzbDrone.Core.Books.Calibre
                     Cover = updateCover ? image : null,
                     PubDate = book.ReleaseDate,
                     Publisher = edition.Publisher,
-                    Languages = edition.Language.CanonicalizeLanguage(),
+                    Languages = language == null ? null : new List<string> { language },
                     Tags = genres,
                     Comments = edition.Overview,
                     Rating = (int)(edition.Ratings.Value * 2),

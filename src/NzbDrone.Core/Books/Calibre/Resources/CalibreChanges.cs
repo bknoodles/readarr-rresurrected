@@ -19,7 +19,10 @@ namespace NzbDrone.Core.Books.Calibre
         [JsonProperty("pubdate")]
         public DateTime? PubDate { get; set; }
         public string Publisher { get; set; }
-        public string Languages { get; set; }
+
+        // A list: Calibre before August 2026 read a plain string one character at a time
+        public List<string> Languages { get; set; }
+
         public List<string> Tags { get; set; }
         public string Comments { get; set; }
         public decimal Rating { get; set; }
