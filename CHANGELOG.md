@@ -23,6 +23,12 @@ All notable changes to the fork are recorded here.
 
 ### New
 
+### Fixed
+
+## [11.3.0] - 2026-10-13
+
+### New
+
 - **Readarr now runs on .NET 8.** .NET 6 reached end of support in November 2024 and no longer
   receives security fixes. The Docker image bundles the .NET 8 runtime, so there's nothing to
   install. Your library, settings, API key and login carry over: you stay signed in across the
