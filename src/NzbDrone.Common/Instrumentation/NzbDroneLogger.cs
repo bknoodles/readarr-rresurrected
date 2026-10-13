@@ -13,6 +13,10 @@ namespace NzbDrone.Common.Instrumentation
     {
         private const string FILE_LOG_LAYOUT = @"${date:format=yyyy-MM-dd HH\:mm\:ss.f}|${level}|${logger}|${message}${onexception:inner=${newline}${newline}[v${assembly-version}] ${exception:format=ToString}${newline}${exception:format=Data}${newline}}";
 
+        // Masked like the log files. A colon inside ${cleanse:...} has to be escaped, or NLog
+        // reads it as the start of another parameter and drops the rest of the layout.
+        public const string ConsoleLogLayout = "${cleanse:inner=[${level}] ${logger}\\: ${message} ${onexception:inner=${newline}${newline}[v${assembly-version}] ${exception:format=ToString}${newline}${exception:format=Data}${newline}}}";
+
         private static bool _isConfigured;
 
         static NzbDroneLogger()
@@ -89,8 +93,10 @@ namespace NzbDrone.Common.Instrumentation
 
             var coloredConsoleTarget = new ColoredConsoleTarget();
 
+            LogManager.Setup().SetupExtensions(s => s.RegisterLayoutRenderer<CleanseLayoutRendererWrapper>("cleanse"));
+
             coloredConsoleTarget.Name = "consoleLogger";
-            coloredConsoleTarget.Layout = "[${level}] ${logger}: ${message} ${onexception:inner=${newline}${newline}[v${assembly-version}] ${exception:format=ToString}${newline}${exception:format=Data}${newline}}";
+            coloredConsoleTarget.Layout = ConsoleLogLayout;
 
             var loggingRule = new LoggingRule("*", level, coloredConsoleTarget);
 
