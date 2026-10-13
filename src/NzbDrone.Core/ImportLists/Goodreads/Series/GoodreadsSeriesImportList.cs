@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using FluentValidation.Results;
 using NLog;
@@ -14,6 +15,9 @@ namespace NzbDrone.Core.ImportLists.Goodreads
 {
     public class GoodreadsSeriesImportList : ImportListBase<GoodreadsSeriesImportListSettings>
     {
+        // 100 works a page; the longest series on Goodreads are a few hundred works
+        private const int MaxPages = 50;
+
         private readonly IProvideSeriesInfo _seriesInfo;
 
         public override string Name => "Goodreads Series";
@@ -36,18 +40,31 @@ namespace NzbDrone.Core.ImportLists.Goodreads
 
             try
             {
-                var series = _seriesInfo.GetSeriesInfo(Settings.SeriesId);
+                var seen = new HashSet<long>();
 
-                foreach (var work in series.Works)
+                for (var page = 1; page <= MaxPages; page++)
                 {
-                    result.Add(new ImportListItemInfo
+                    var series = _seriesInfo.GetSeriesInfo(Settings.SeriesId, page);
+                    var newWorks = series.Works.Where(x => seen.Add(x.Id)).ToList();
+
+                    foreach (var work in newWorks)
                     {
-                        BookGoodreadsId = work.Id.ToString(),
-                        Book = work.OriginalTitle,
-                        EditionGoodreadsId = work.BestBook.Id.ToString(),
-                        Author = work.BestBook.AuthorName,
-                        AuthorGoodreadsId = work.BestBook.AuthorId.ToString()
-                    });
+                        result.Add(new ImportListItemInfo
+                        {
+                            BookGoodreadsId = work.Id.ToString(),
+                            Book = work.OriginalTitle,
+                            EditionGoodreadsId = work.BestBook.Id.ToString(),
+                            Author = work.BestBook.AuthorName,
+                            AuthorGoodreadsId = work.BestBook.AuthorId.ToString()
+                        });
+                    }
+
+                    // An empty page is past the end, and a page of works already seen means the
+                    // page was ignored; either way asking for more would never stop.
+                    if (!newWorks.Any() || (series.SeriesWorksCount > 0 && seen.Count >= series.SeriesWorksCount))
+                    {
+                        break;
+                    }
                 }
 
                 _importListStatusService.RecordSuccess(Definition.Id);
