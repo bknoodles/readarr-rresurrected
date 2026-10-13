@@ -42,10 +42,11 @@ export const defaultState = {
 
   columns: [
     {
+      // The table's select-all cell already heads this column
       name: 'select',
       columnLabel: 'Select',
       isSortable: false,
-      isVisible: true,
+      isVisible: false,
       isModifiable: false,
       isHidden: true
     },
