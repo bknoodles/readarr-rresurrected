@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -93,6 +94,13 @@ namespace NzbDrone.Host
                 STJson.ApplySerializerSettings(options.JsonSerializerOptions);
             })
             .AddControllersAsServices();
+
+            // .NET 7 started binding API controller parameters from dependency injection whenever the
+            // container can supply their type, and DryIoc can construct almost any class. Resources
+            // sent in request bodies then arrived as fresh empty objects: saving any settings failed
+            // validation with every field null. This keeps .NET 6's behaviour, where complex
+            // parameters come from the request body.
+            services.Configure<ApiBehaviorOptions>(options => options.DisableImplicitFromServicesParameters = true);
 
             services.AddSwaggerGen(c =>
             {
