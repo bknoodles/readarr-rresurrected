@@ -23,7 +23,15 @@ All notable changes to the fork are recorded here.
 
 ### New
 
+- **Readarr now runs on .NET 8.** .NET 6 reached end of support in November 2024 and no longer
+  receives security fixes. The Docker image bundles the .NET 8 runtime, so there's nothing to
+  install. Your library, settings, API key and login carry over: you stay signed in across the
+  upgrade.
+
 ### Fixed
+
+- **Email notifications use an up-to-date mail library.** The email notification's MailKit and
+  MimeKit libraries are updated to 4.16, which fixes published security vulnerabilities.
 
 ## [11.2.5] - 2026-10-12
 
