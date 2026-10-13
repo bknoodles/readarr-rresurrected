@@ -58,7 +58,11 @@ namespace NzbDrone.Test.Common
             _startupLog = new List<string>();
             if (BuildInfo.IsDebug)
             {
-                Start(Path.Combine(TestContext.CurrentContext.TestDirectory, "..", "..", "_output", "net6.0", readarrConsoleExe));
+                // Tests run from _tests/<framework>/ and the app builds to _output/<framework>/. Taking the
+                // framework from the test directory keeps the two in step after a framework upgrade, where
+                // a hardcoded name would quietly start a stale build left behind by the old one.
+                var framework = Path.GetFileName(TestContext.CurrentContext.TestDirectory.TrimEnd(Path.DirectorySeparatorChar));
+                Start(Path.Combine(TestContext.CurrentContext.TestDirectory, "..", "..", "_output", framework, readarrConsoleExe));
             }
             else
             {
