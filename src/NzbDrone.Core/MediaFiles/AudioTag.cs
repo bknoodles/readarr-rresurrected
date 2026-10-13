@@ -477,10 +477,12 @@ namespace NzbDrone.Core.MediaFiles
 
             if (OriginalReleaseDate?.Date != other.OriginalReleaseDate?.Date)
             {
-                // Id3v2.3 tags can only store the year, not the full date
+                // Id3v2.3 tags can only store the year, not the full date. When the other side has
+                // no date at all, the full comparison below reports the removal.
                 if (OriginalReleaseDate.HasValue &&
                     OriginalReleaseDate.Value.Month == 1 &&
-                    OriginalReleaseDate.Value.Day == 1)
+                    OriginalReleaseDate.Value.Day == 1 &&
+                    other.OriginalReleaseDate.HasValue)
                 {
                     if (OriginalReleaseDate.Value.Year != other.OriginalReleaseDate.Value.Year)
                     {

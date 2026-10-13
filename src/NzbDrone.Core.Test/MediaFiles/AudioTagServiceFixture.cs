@@ -393,6 +393,56 @@ namespace NzbDrone.Core.Test.MediaFiles.AudioTagServiceFixture
                 .Verify(v => v.PublishEvent(It.IsAny<BookFileRetaggedEvent>()), Times.Once());
         }
 
+        // A year-only original date (ID3v2.3 TORY, or any tagger that stores just the year) reads
+        // back as 1 January. Diffing that against a book with no release date used to throw.
+        [TestCase("nin.mp3")]
+        [TestCase("nin.flac")]
+        [TestCase("nin.m4a")]
+        public void write_tags_should_clear_year_only_original_date_when_book_has_no_release_date(string filename)
+        {
+            GivenFileCopy(filename);
+            _testTags.OriginalReleaseDate = new DateTime(2009, 1, 1);
+            _testTags.Write(_copiedFile);
+
+            var file = GivenPopulatedTrackfile(0);
+            file.Path = _copiedFile;
+            file.Edition.Value.Book.Value.ReleaseDate = null;
+
+            Assert.DoesNotThrow(() => Subject.WriteTags(file, false, true));
+
+            Subject.ReadAudioTag(_copiedFile).OriginalReleaseDate.Should().NotHaveValue();
+        }
+
+        private static AudioTag TagWithOriginalDate(DateTime? date)
+        {
+            return new AudioTag
+            {
+                Performers = Array.Empty<string>(),
+                BookAuthors = Array.Empty<string>(),
+                Genres = Array.Empty<string>(),
+                OriginalReleaseDate = date
+            };
+        }
+
+        [Test]
+        public void diff_should_report_year_only_original_date_removed()
+        {
+            var onDisk = TagWithOriginalDate(new DateTime(2009, 1, 1));
+            var wanted = TagWithOriginalDate(null);
+
+            onDisk.Diff(wanted).Should().ContainKey("Original Release Date")
+                .WhichValue.Should().Be(Tuple.Create("2009-01-01", (string)null));
+        }
+
+        [Test]
+        public void diff_should_still_compare_year_only_original_dates_by_year()
+        {
+            var onDisk = TagWithOriginalDate(new DateTime(2009, 1, 1));
+
+            onDisk.Diff(TagWithOriginalDate(new DateTime(2009, 6, 15))).Should().NotContainKey("Original Year");
+            onDisk.Diff(TagWithOriginalDate(new DateTime(2010, 6, 15))).Should().ContainKey("Original Year");
+        }
+
         [Test]
         public void should_not_fail_reading_metadata_with_dates_omitted()
         {
