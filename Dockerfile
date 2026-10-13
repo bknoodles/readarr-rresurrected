@@ -10,10 +10,12 @@ COPY frontend/ ./frontend/
 RUN yarn run build --env production
 
 # ── Stage 2: build backend ────────────────────────────────────────────────────
+# Since .NET 8 a runtime identifier no longer implies a self-contained publish, so it's asked
+# for explicitly: the Alpine image has no .NET runtime of its own.
 # The SDK also runs natively and cross-publishes for the target architecture, so a
 # multi-platform build only emulates the small runtime stage below (apk and pip),
 # rather than the whole compile.
-FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:6.0 AS backend-builder
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:8.0 AS backend-builder
 WORKDIR /src
 
 COPY src/ ./src/
@@ -34,12 +36,13 @@ RUN case "$TARGETARCH" in \
       -p:Configuration=Release \
       -p:Platform=Posix \
       -p:RuntimeIdentifiers=$RID \
+      -p:SelfContained=true \
       -p:EnableAnalyzers=false \
       -p:TreatWarningsAsErrors=false \
       -p:AssemblyVersion=${ASSEMBLY_VERSION} \
       -p:ReadarrOfficialBuild=true \
       -t:PublishAllRids \
-    && mv _output/net6.0/$RID/publish /src/publish
+    && mv _output/net8.0/$RID/publish /src/publish
 
 # ── Stage 3: runtime (Alpine) ─────────────────────────────────────────────────
 FROM alpine:3.22 AS runtime

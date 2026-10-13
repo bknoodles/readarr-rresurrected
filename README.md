@@ -139,7 +139,7 @@ docker compose up -d
 
 ### Local Development (without Docker)
 
-**Backend:**
+**Backend** (needs the [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)):
 ```bash
 dotnet restore src/Readarr.sln
 dotnet build src/Readarr.sln -p:Configuration=Debug -p:Platform=Posix --no-restore
@@ -160,7 +160,7 @@ uvicorn app:app --host 127.0.0.1 --port 28202 --workers 1
 
 **Run Readarr:**
 ```bash
-_output/net6.0/Readarr --nobrowser --data=/tmp/readarr-data
+_output/net8.0/Readarr --nobrowser --data=/tmp/readarr-data
 ```
 
 ---

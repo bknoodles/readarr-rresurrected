@@ -17,7 +17,7 @@ Readarr cloud metadata server is no longer true here.
 
 ## Architecture Overview
 
-Readarr is an ebook/audiobook manager — a .NET 6 backend with a React/Redux frontend, modeled
+Readarr is an ebook/audiobook manager — a .NET 8 backend with a React/Redux frontend, modeled
 after Sonarr/Radarr. This fork adds a Python metadata sidecar.
 
 ### Backend (`src/`)
