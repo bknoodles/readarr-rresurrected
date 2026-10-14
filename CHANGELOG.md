@@ -23,6 +23,12 @@ All notable changes to the fork are recorded here.
 
 ### New
 
+### Fixed
+
+## [11.3.1] - 2026-10-13
+
+### New
+
 - **Rescans stop searching Goodreads again for files they can't identify.** Every rescan used to
   search for each unidentified file in your library again, adding to the requests that get
   Goodreads to block you. A search that finds nothing is now remembered for 30 days, or until the
